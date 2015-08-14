@@ -47,6 +47,7 @@ su - git -c "setenv GOPATH /home/git/go; cd /home/git/go/src/github.com/gogits/g
 echo "Copying gogs build to git home"
 mkdir -p /home/git/gogs
 cp -R /usr/home/git/go/src/github.com/gogits/gogs/ /home/git/gogs
+ln -s /usr/home/git/gogs/.ssh /usr/home/git/
 # Change ownership of everything in the git directory
 chown -R git:git /home/git/
 # 7) Start up scripts
