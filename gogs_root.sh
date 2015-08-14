@@ -40,6 +40,7 @@ if (! -d /home ) then
 	/bin/ln -s /usr/home /home
 endif
 pw add user -n git -u 913 -d $GITHOME -s /bin/tcsh -c "Gogs -  Go Git Service"
+chown -R git:git $GITHOME
 su - git -c "/usr/bin/ssh-keygen -b 2048 -N '' -f ~/.ssh/id_rsa -t rsa -q &"
 # 6) Get & compile gogs
 echo "Fetching gogs from Github"
