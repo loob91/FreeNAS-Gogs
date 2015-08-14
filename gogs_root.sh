@@ -8,11 +8,11 @@ echo "Press any key to begin"
 set jnk = $<
 # 3) Enable SSH
 echo "Enabling SSH"
-/usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
+#/usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
 # Generate root keys &  Enable root login (with SSH keys). 
 # [Optional, to continue install straight from SSH to the jail]
 echo "Generating ssh-key in background"
-/usr/bin/ssh-keygen -b 16384 -N '' -f ~/.ssh/id_rsa -t rsa -q &
+#/usr/bin/ssh-keygen -b 16384 -N '' -f ~/.ssh/id_rsa -t rsa -q &
 echo "Enabling root login without password"
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 # Start SSH
@@ -32,24 +32,26 @@ service memcached start
 service redis start
 # 5) Create user first; installing git will install a git user to 1001
 echo "Creating git user"
-mkdir -p /home/git/
+mkdir -p /home/git
 pw add user -n git -u 913 -s /bin/tcsh -c "Gogs -  Go Git Service"
 chown -R git:git /home/git/
 # 6) Get & compile gogs
 echo "Fetching gogs from Github"
 su - git -c "setenv GOPATH /home/git/go; go get -u github.com/gogits/gogs"
 echo "Getting gogs compile tags"
-su - git -c "setenv GOPATH /home/git/go; go get -u -tags 'sqlite redis memcache cert' github.com/gogits/gogs"
+su - git -c "setenv GOPATH /home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go get -u -tags 'sqlite redis memcache cert' github.com/gogits/gogs"
 echo "Compiling gogs"
 su - git -c "setenv GOPATH /home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go build -tags 'sqlite redis memcache cert'"
-echo "Copying gogs executable and template folder to git home"
-cp /home/git/go/src/github.com/gogits/gogs/gogs /home/git/
-cp -R /home/git/go/src/github.com/gogits/gogs/templates /home/git/
+echo "Copying gogs build to git home"
+mkdir -p /home/git/gogs
+cp -R /usr/home/git/go/src/github.com/gogits/gogs/ /home/git/gogs
 # Change ownership of everything in the git directory
 chown -R git:git /home/git/
 # 7) Start up scripts
 echo "Copying startup script to rc.d, enabling & starting gogs"
+#/usr/bin/sed 's/\/home\/git/\/home\/git\/gogs/g' /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs
 cp /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs /usr/local/etc/rc.d/
+sed -i -e 's/\/home\/git/\/home\/git\/gogs/g' /usr/local/etc/rc.d/gogs
 chmod +x /usr/local/etc/rc.d/gogs
 echo gogs_enable="YES" >> /etc/rc.conf
 service gogs start
