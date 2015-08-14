@@ -11,8 +11,10 @@ echo "Enabling SSH"
 #/usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
 # Generate root keys &  Enable root login (with SSH keys). 
 # [Optional, to continue install straight from SSH to the jail]
-echo "Generating ssh-key in background"
-#/usr/bin/ssh-keygen -b 16384 -N '' -f ~/.ssh/id_rsa -t rsa -q &
+if (! -d ~/.ssh/ ) then
+	echo ".ssh does not exist, generating ssh-key in background"
+	/usr/bin/ssh-keygen -b 16384 -N '' -f ~/.ssh/id_rsa -t rsa -q &
+endif
 echo "Enabling root login without password"
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 # Start SSH
@@ -32,9 +34,9 @@ service memcached start
 service redis start
 # 5) Create user first; installing git will install a git user to 1001
 echo "Creating git user"
-mkdir -p /home/git
+mkdir -p /usr/home/git/
 pw add user -n git -u 913 -s /bin/tcsh -c "Gogs -  Go Git Service"
-chown -R git:git /home/git/
+chown -R git:git /usr/home/git/
 # 6) Get & compile gogs
 echo "Fetching gogs from Github"
 su - git -c "setenv GOPATH /home/git/go; go get -u github.com/gogits/gogs"
@@ -55,3 +57,10 @@ sed -i -e 's/\/home\/git/\/home\/git\/gogs/g' /usr/local/etc/rc.d/gogs
 chmod +x /usr/local/etc/rc.d/gogs
 echo gogs_enable="YES" >> /etc/rc.conf
 service gogs start
+
+echo 
+echo
+echo
+
+echo "Gogs should be running on port 3000 on the following addresses:"
+ifconfig | grep inet
