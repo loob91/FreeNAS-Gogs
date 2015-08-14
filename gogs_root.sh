@@ -8,7 +8,7 @@ echo "Press any key to begin"
 set jnk = $<
 # 3) Enable SSH
 echo "Enabling SSH"
-#/usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
+/usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
 # Generate root keys &  Enable root login (with SSH keys). 
 # [Optional, to continue install straight from SSH to the jail]
 if (! -d ~/.ssh/ ) then
@@ -26,30 +26,33 @@ echo "Updating packages"
 echo "Upgrading packages"
 /usr/sbin/pkg upgrade -y
 echo "Installing memcached, redis & go"
-/usr/sbin/pkg install -y memcached redis go
+/usr/sbin/pkg install -y memcached redis go git
 echo "Enabling & starting memcached & redis"
 echo memcached_enable="YES" >> /etc/rc.conf
 echo redis_enable="YES" >> /etc/rc.conf
-service memcached start
-service redis start
+/usr/sbin/service memcached start
+/usr/sbin/service redis start
 # 5) Create user first; installing git will install a git user to 1001
 echo "Creating git user"
-mkdir -p /usr/home/git/
-pw add user -n git -u 913 -s /bin/tcsh -c "Gogs -  Go Git Service"
-chown -R git:git /usr/home/git/
+setenv GITHOME /usr/home/git/
+mkdir -p $GITHOME
+if (! -d /home ) then
+	/bin/ln -s /usr/home /home
+endif
+pw add user -n git -u 913 -d $GITHOME -s /bin/tcsh -c "Gogs -  Go Git Service"
+su - git -c "/usr/bin/ssh-keygen -b 2048 -N '' -f ~/.ssh/id_rsa -t rsa -q &"
 # 6) Get & compile gogs
 echo "Fetching gogs from Github"
-su - git -c "setenv GOPATH /home/git/go; go get -u github.com/gogits/gogs"
+su - git -c "setenv GOPATH /usr/home/git/go; go get -u github.com/gogits/gogs"
 echo "Getting gogs compile tags"
-su - git -c "setenv GOPATH /home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go get -u -tags 'sqlite redis memcache cert' github.com/gogits/gogs"
+su - git -c "setenv GOPATH /usr/home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go get -u -tags 'sqlite redis memcache cert' github.com/gogits/gogs"
 echo "Compiling gogs"
-su - git -c "setenv GOPATH /home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go build -tags 'sqlite redis memcache cert'"
+su - git -c "setenv GOPATH /usr/home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go build -tags 'sqlite redis memcache cert'"
 echo "Copying gogs build to git home"
-mkdir -p /home/git/gogs
-cp -R /usr/home/git/go/src/github.com/gogits/gogs/ /home/git/gogs
-ln -s /usr/home/git/gogs/.ssh /usr/home/git/
+su - git -c "cp -R /usr/home/git/go/src/github.com/gogits/gogs /home/git/"
+su - git -c "ln -s /usr/home/git/.ssh/ /usr/home/git/gogs/"
 # Change ownership of everything in the git directory
-chown -R git:git /home/git/
+chown -R git:git /usr/home/git/
 # 7) Start up scripts
 echo "Copying startup script to rc.d, enabling & starting gogs"
 #/usr/bin/sed 's/\/home\/git/\/home\/git\/gogs/g' /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs
