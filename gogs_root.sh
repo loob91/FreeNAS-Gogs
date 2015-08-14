@@ -10,11 +10,6 @@ set jnk = $<
 echo "Enabling SSH"
 /usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
 # Generate root keys &  Enable root login (with SSH keys). 
-# [Optional, to continue install straight from SSH to the jail]
-if (! -d ~/.ssh/ ) then
-	echo ".ssh does not exist, generating ssh-key in background"
-	/usr/bin/ssh-keygen -b 16384 -N '' -f ~/.ssh/id_rsa -t rsa -q &
-endif
 echo "Enabling root login without password"
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 # Start SSH
