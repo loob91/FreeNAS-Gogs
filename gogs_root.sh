@@ -26,7 +26,7 @@ echo "Updating packages"
 echo "Upgrading packages"
 /usr/sbin/pkg upgrade -y
 echo "Installing memcached, redis & go"
-/usr/sbin/pkg install -y memcached redis go git
+/usr/sbin/pkg install -y memcached redis go git bash
 echo "Enabling & starting memcached & redis"
 echo memcached_enable="YES" >> /etc/rc.conf
 echo redis_enable="YES" >> /etc/rc.conf
