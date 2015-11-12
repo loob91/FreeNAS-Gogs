@@ -52,6 +52,8 @@ else
     # 7) Start up scripts
     echo gogs_enable="YES" >> /etc/rc.conf
 endif
+# cleaning this mess
+su - git -c "rm -rf /usr/home/git/go/"
 service gogs start
 echo 
 echo
