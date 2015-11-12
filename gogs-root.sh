@@ -13,13 +13,14 @@ else
     install()
 endif
 
-update () {a
+update () {
     echo "Updating Gogs..."
     echo
     # Stop Gogs service
     service gogs stop 
     compile()
     service gogs start
+    echo "Update Done!"
 }
 
 install {
@@ -58,14 +59,9 @@ install {
     compile ()
     su - git -c "ln -s /usr/home/git/.ssh/ /usr/home/git/gogs/"
     # 7) Start up scripts
-    echo "Copying startup script to rc.d, enabling & starting gogs"
-    #/usr/bin/sed 's/\/home\/git/\/home\/git\/gogs/g' /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs
-    cp /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs /usr/local/etc/rc.d/
-    sed -i -e 's/\/home\/git/\/home\/git\/gogs/g' /usr/local/etc/rc.d/gogs
-    chmod +x /usr/local/etc/rc.d/gogs
     echo gogs_enable="YES" >> /etc/rc.conf
     service gogs start
- }
+}
 
 compile() {
     echo "Fetching gogs from Github"
@@ -78,6 +74,11 @@ compile() {
     su - git -c "cp -R /usr/home/git/go/src/github.com/gogits/gogs /home/git/"
     # Change ownership of everything in the git directory
     chown -R git:git /usr/home/git/
+     echo "Copying startup script to rc.d, enabling & starting gogs"
+    #/usr/bin/sed 's/\/home\/git/\/home\/git\/gogs/g' /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs
+    cp /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs /usr/local/etc/rc.d/
+    sed -i -e 's/\/home\/git/\/home\/git\/gogs/g' /usr/local/etc/rc.d/gogs
+    chmod +x /usr/local/etc/rc.d/gogs
 }
 
 echo 
