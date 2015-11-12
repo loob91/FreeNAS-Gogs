@@ -8,22 +8,14 @@ echo "Press any key to begin"
 set jnk = $<
 
 if ( -f /usr/locat/etc/rc.d/gogs ) then
-    update()
-else
-    install()
-endif
-
-update () {
     echo "Updating Gogs..."
     echo
     # Stop Gogs service
     service gogs stop 
-    compile()
+    gogs-compile.sh
     service gogs start
     echo "Update Done!"
-}
-
-install {
+else
     # 3) Enable SSH
     echo "Enabling SSH"
     /usr/bin/sed -i '.bak' 's/sshd_enable="NO"/sshd_enable="YES"/g' /etc/rc.conf
@@ -56,31 +48,12 @@ install {
     chown -R git:git $GITHOME
     su - git -c "/usr/bin/ssh-keygen -b 2048 -N '' -f ~/.ssh/id_rsa -t rsa -q &"
     # 6) Get & compile gogs
-    compile ()
+    gogs-compile.sh
     su - git -c "ln -s /usr/home/git/.ssh/ /usr/home/git/gogs/"
     # 7) Start up scripts
     echo gogs_enable="YES" >> /etc/rc.conf
-    service gogs start
-}
-
-compile() {
-    echo "Fetching gogs from Github"
-    su - git -c "setenv GOPATH /usr/home/git/go; go get -u github.com/gogits/gogs"
-    echo "Getting gogs compile tags"
-    su - git -c "setenv GOPATH /usr/home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go get -u -tags 'sqlite redis memcache cert' github.com/gogits/gogs"
-    echo "Compiling gogs"
-    su - git -c "setenv GOPATH /usr/home/git/go; cd /home/git/go/src/github.com/gogits/gogs; go build -tags 'sqlite redis memcache cert'"
-    echo "Copying gogs build to git home"
-    su - git -c "cp -R /usr/home/git/go/src/github.com/gogits/gogs /home/git/"
-    # Change ownership of everything in the git directory
-    chown -R git:git /usr/home/git/
-     echo "Copying startup script to rc.d, enabling & starting gogs"
-    #/usr/bin/sed 's/\/home\/git/\/home\/git\/gogs/g' /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs
-    cp /home/git/go/src/github.com/gogits/gogs/scripts/init/freebsd/gogs /usr/local/etc/rc.d/
-    sed -i -e 's/\/home\/git/\/home\/git\/gogs/g' /usr/local/etc/rc.d/gogs
-    chmod +x /usr/local/etc/rc.d/gogs
-}
-
+endif
+service gogs start
 echo 
 echo
 echo
