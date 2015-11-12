@@ -12,8 +12,7 @@ if ( -f /usr/locat/etc/rc.d/gogs ) then
     echo
     # Stop Gogs service
     service gogs stop 
-    gogs-compile.sh
-    service gogs start
+    ./gogs-compile.sh
     echo "Update Done!"
 else
     # 3) Enable SSH
