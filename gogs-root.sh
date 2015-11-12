@@ -1,8 +1,8 @@
 #!/bin/tcsh
 echo "FreeNAS Gogs installation script."
 echo "This has been tested on:"
-echo "    9.3-RELEASE-p5 FreeBSD 9.3-RELEASE-p5 #1"
-echo "    f8ed4e8: Fri Dec 19 20:25:35 PST 2014"
+echo "    9.3-RELEASE-p29"
+echo
 echo
 echo "Press any key to begin"
 set jnk = $<
