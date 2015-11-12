@@ -1,5 +1,5 @@
 # FreeNAS-Gogs
-Gogs (gogs.io) install script for FreeNAS (and any FreeBSD Jail)
+Gogs (gogs.io) install an update script for FreeNAS (and any FreeBSD Jail)
 
 1. ```git clone https://github.com/jedediahfrey/FreeNAS-Gogs.git```
 2. ```cd FreeNAS-Gogs```
