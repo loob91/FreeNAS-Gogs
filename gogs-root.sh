@@ -7,7 +7,7 @@ echo
 echo "Press any key to begin"
 set jnk = $<
 
-if ( -f /usr/locat/etc/rc.d/gogs ) then
+if ( -f /usr/local/etc/rc.d/gogs ) then
     echo "Updating Gogs..."
     echo
     # Stop Gogs service
