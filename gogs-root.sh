@@ -47,7 +47,7 @@ else
     chown -R git:git $GITHOME
     su - git -c "/usr/bin/ssh-keygen -b 2048 -N '' -f ~/.ssh/id_rsa -t rsa -q &"
     # 6) Get & compile gogs
-    gogs-compile.sh
+    ./gogs-compile.sh
     su - git -c "ln -s /usr/home/git/.ssh/ /usr/home/git/gogs/"
     # 7) Start up scripts
     echo gogs_enable="YES" >> /etc/rc.conf
