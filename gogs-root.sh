@@ -1,8 +1,7 @@
 #!/bin/tcsh
 echo "FreeNAS Gogs installation script."
 echo "This has been tested on:"
-echo "    9.3-RELEASE-p29"
-echo
+echo "    r295946+07c41cd(9.10-STABLE)"
 echo
 echo "Press any key to begin"
 set jnk = $<
@@ -32,11 +31,12 @@ else
     echo "Installing memcached, redis & go"
     /usr/sbin/pkg install -y memcached redis go git bash
     echo "Enabling & starting memcached & redis"
-    echo memcached_enable="YES" >> /etc/rc.conf
-    echo redis_enable="YES" >> /etc/rc.conf
+    sysrc memcached_enable=YES
+    sysrc redis_enable=YES
+
     /usr/sbin/service memcached start
     /usr/sbin/service redis start
-    # 5) Create user first; installing git will install a git user to 1001
+    # 5) Create user first; installing git will install a git user to 913
     echo "Creating git user"
     setenv GITHOME /usr/home/git/
     mkdir -p $GITHOME
@@ -50,7 +50,7 @@ else
     ./gogs-compile.sh
     su - git -c "ln -s /usr/home/git/.ssh/ /usr/home/git/gogs/"
     # 7) Start up scripts
-    echo gogs_enable="YES" >> /etc/rc.conf
+    sysrc gogs_enable=YES
 endif
 # cleaning this mess
 su - git -c "rm -rf /usr/home/git/go/"
