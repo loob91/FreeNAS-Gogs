@@ -5,8 +5,8 @@ Gogs (gogs.io) install an update script for FreeNAS (and any FreeBSD Jail)
     fetch --no-verify-peer https://github.com/jedediahfrey/FreeNAS-Gogs/archive/master.zip
     unzip master.zip
     cd FreeNAS-Gogs-master
-    chmod +x gogs_root.sh
-    ./gogs_root.sh
+    chmod +x gogs-root.sh
+    ./gogs-root.sh
 
 During initial setup, select "SQLite3" database type.
 
