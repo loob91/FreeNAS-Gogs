@@ -11,3 +11,6 @@ Gogs (gogs.io) install an update script for FreeNAS (and any FreeBSD Jail)
 During initial setup, select "SQLite3" database type.
 
 Final gogs folder is /usr/home/git/gogs/
+
+
+![](http://tracker.exstatic.org/pixel.php)
